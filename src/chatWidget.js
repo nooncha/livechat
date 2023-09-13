@@ -1,6 +1,9 @@
 export class chatWidget {
-    constructor({position}) {
+    constructor({position,primaryColor,avatar}) {
         this.position = this.getPosition(position);
+        this.chatPosition = this.chatBoxPosition(position);
+        this.primaryColor = primaryColor;
+        this.avatar = avatar;
         this.open = false;
         this.initialise();
         this.createStyles();
@@ -12,6 +15,14 @@ export class chatWidget {
             [vertical]: '30px',
             [horizontal]: '30px',
         };
+    }
+
+    chatBoxPosition(position) {
+        const [vertical, horizontal] = position.split('-');
+        return {
+            [vertical]: '75px',
+            [horizontal]: '-25px'
+        }
     }
     
     initialise() {
@@ -25,12 +36,12 @@ export class chatWidget {
         buttonContainer.classList.add('button-container')
 
         const chatIcon = document.createElement('img');
-        chatIcon.src = 'assets/chat.svg';
-        chatIcon.classList.add('icon');
+        chatIcon.src = this.avatar ? this.avatar : 'https://svgshare.com/i/xXv.svg';
+        chatIcon.classList.add('icon', this.avatar ? 'avatar':'');
         this.chatIcon = chatIcon;
 
         const closeIcon = document.createElement('img');
-        closeIcon.src = 'assets/cross.svg';
+        closeIcon.src = 'https://svgshare.com/i/xXh.svg';
         closeIcon.classList.add('icon', 'hidden');
         this.closeIcon = closeIcon;
 
@@ -40,6 +51,8 @@ export class chatWidget {
 
         this.messageContainer = document.createElement('div');
         this.messageContainer.classList.add('hidden', 'message-container');
+        Object.keys(this.chatPosition)
+            .forEach(key => this.messageContainer.style[key] = this.chatPosition[key]);
         
         this.createMessageContainerContent();
 
@@ -114,24 +127,30 @@ export class chatWidget {
                 left: 9px;
                 transition: transform .3s ease;
             }
+            .avatar {
+                width: 100%;
+                top: 0;
+                left: 0;
+                border-radius: 50%;
+            }
             .hidden {
                 transform: scale(0);
             }
             .button-container {
-                background-color: #04b73f;
+                background-color: ${this.primaryColor};
                 width: 60px;
                 height: 60px;
                 border-radius: 50%;
             }
             .message-container {
                 box-shadow: 0 0 18px 8px rgba(0, 0, 0, 0.1), 0 0 32px 32px rgba(0, 0, 0, 0.08);
-                width: 400px;
-                right: -25px;
-                bottom: 75px;
+                width: 90vw;
+                max-width: 400px;
                 max-height: 400px;
                 position: absolute;
                 transition: max-height .2s ease;
                 font-family: Helvetica, Arial ,sans-serif;
+                background-color: #f9fafb;
             }
             .message-container.hidden {
                 max-height: 0px;
@@ -140,14 +159,13 @@ export class chatWidget {
                 margin: 0;
                 padding: 20px 20px;
                 color: #fff;
-                background-color: #04b73f;
+                background-color: ${this.primaryColor};
             }
             .message-container .content {
                 margin: 20px 10px ;
                 border: 1px solid #dbdbdb;
                 padding: 10px;
                 display: flex;
-                background-color: #fff;
                 flex-direction: column;
             }
             .message-container form * {
@@ -155,24 +173,28 @@ export class chatWidget {
             }
             .message-container form input {
                 padding: 10px;
+                border: 1px solid #dbdbdb;
+                outline: 1px solid #dbdbdb;
             }
             .message-container form textarea {
                 height: 100px;
                 padding: 10px;
+                border: 1px solid #dbdbdb;
+                outline: 1px solid #dbdbdb;
             }
             .message-container form textarea::placeholder {
                 font-family: Helvetica, Arial ,sans-serif;
             }
             .message-container form button {
                 cursor: pointer;
-                background-color: #04b73f;
+                background-color: ${this.primaryColor};
                 color: #fff;
                 border: 0;
                 border-radius: 4px;
                 padding: 10px;
             }
             .message-container form button:hover {
-                background-color: #16632f;
+                opacity: 0.9;
             }
         `.replace(/^\s+|\n/gm, '');
         document.head.appendChild(styleTag);
